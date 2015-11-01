@@ -39,4 +39,11 @@ public class Leaf extends Node {
         this.value = value;
     }
 
+    @Override
+    public String toString() {
+        return this.getKey()+"";
+    }
+    
+    
+
 }

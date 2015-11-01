@@ -250,9 +250,10 @@ public class ConcurrentBST<K extends Comparable<? super K>, V> implements ITree 
                 InternalNode i = (InternalNode) pop;
                 Node left = i.left.get();
                 Node right = i.right.get();
-                writer.println(i.getKey() + "i [shape=box];");
-                writer.println(i.getKey() + "i -> " + left.getKey() + ";");
-                writer.println(i.getKey() + "i -> " + right.getKey() + ";");
+                writer.println(i + " [shape=box];");
+                writer.println(i + " -> " + left + ";");
+                writer.println(i + " -> " + right + ";");
+                
                 queue.add(left);
                 queue.add(right);
             } else {

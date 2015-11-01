@@ -28,12 +28,9 @@ public class Test {
         root.right.set(new Leaf("B", "B"));
 //        tree.insert("A", "A");
 //        tree.insert("B", "B");
-        if (tree.insert("C", "C")) {
-            System.out.println("c inserted");
-        }
+        tree.insert("C", "C");
         tree.insert("F", "F");
 
-        Thread.sleep(500);
         try {
             tree.printTree2DotFile();
         } catch (UnsupportedEncodingException ex) {

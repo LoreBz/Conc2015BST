@@ -1,10 +1,10 @@
 digraph BST {
 Bi [shape=box];
 Bi -> A;
-Bi -> C;
+Bi -> Ci;
 Ci [shape=box];
 Ci -> B;
-Ci -> F;
+Ci -> Fi;
 Fi [shape=box];
 Fi -> C;
 Fi -> F;

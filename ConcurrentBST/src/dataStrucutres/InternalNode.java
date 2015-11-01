@@ -48,4 +48,11 @@ public class InternalNode extends Node {
         this.right = new AtomicReference<>(null);
     }
 
+    @Override
+    public String toString() {
+        return this.getKey()+"i";
+    }
+    
+    
+
 }
