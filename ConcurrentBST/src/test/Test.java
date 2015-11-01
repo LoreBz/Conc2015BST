@@ -10,6 +10,8 @@ import dataStrucutres.InternalNode;
 import dataStrucutres.Leaf;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,19 +22,31 @@ import java.util.logging.Logger;
 public class Test {
 
     public static void main(String[] args) throws InterruptedException {
-        ConcurrentBST<String, Object> tree = new ConcurrentBST<>();
-        //sequential test
-        InternalNode root = tree.getRoot();
-        root.setKey("B");
-        root.left.set(new Leaf("A", "A"));
-        root.right.set(new Leaf("B", "B"));
-//        tree.insert("A", "A");
-//        tree.insert("B", "B");
-        tree.insert("C", "C");
-        tree.insert("F", "F");
+        ConcurrentBST<Integer, Object> tree = new ConcurrentBST<>();
+//        //sequential test
 
+//        tree.insert(2, "A");
+//        
+        tree.insert(1, "B");
+        tree.insert(3, "C");
+        tree.insert(5, "F");
+        tree.insert(3,"D");
+//        
+//        tree.delete(5);
+//        tree.delete(1);
+//        tree.delete(5);
+//        tree.delete(6);
+//        tree.delete(1);
+//        tree.delete(3);
+//        tree.delete(2);
+        
         try {
-            tree.printTree2DotFile();
+            Calendar calendar = Calendar.getInstance();
+            Date time = calendar.getTime();
+            int hours = time.getHours();
+            int minutes = time.getMinutes();
+            int seconds = time.getSeconds();
+            tree.printTree2DotFile(hours + ":" + minutes + ":" + seconds);
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

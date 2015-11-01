@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author Lorenzo
  */
-public class InternalNode extends Node {
+public class InternalNode<K extends Integer, V extends Object> extends Node<K, V> {
 
     /**
      * The Update filed where info about node's state and Info are stored
@@ -30,11 +30,11 @@ public class InternalNode extends Node {
      *
      * @param key the key associated with this node
      */
-    public InternalNode(Comparable key) {
+    public InternalNode(K key) {
         super(key);
     }
 
-    public InternalNode(Update update, Node left, Node right, Comparable key) {
+    public InternalNode(Update update, Node left, Node right, K key) {
         super(key);
         this.update = new AtomicReference<>(update);
         this.left = new AtomicReference<>(left);
@@ -42,17 +42,23 @@ public class InternalNode extends Node {
     }
 
     public InternalNode() {
-        super(null);
+        super(Dummy.dummy2);
         this.update = new AtomicReference<>(new Update(State.CLEAN, null));
-        this.left = new AtomicReference<>(null);
-        this.right = new AtomicReference<>(null);
+        this.left = new AtomicReference<>();
+        this.left.set(new Leaf(Dummy.dummy1, null));
+        this.right = new AtomicReference<>();
+        this.right.set(new Leaf(Dummy.dummy2, null));
     }
 
     @Override
     public String toString() {
-        return this.getKey()+"i";
+        if (this.getKey() == Dummy.dummy1) {
+            return "iDummy1";
+        } else if (this.getKey() == Dummy.dummy2) {
+            return "iDummy2";
+        } else {
+            return "i"+this.getKey() + "";
+        }
     }
-    
-    
 
 }

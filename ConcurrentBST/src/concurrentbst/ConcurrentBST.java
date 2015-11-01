@@ -6,6 +6,7 @@
 package concurrentbst;
 
 import dataStrucutres.Dinfo;
+import dataStrucutres.Dummy;
 import dataStrucutres.Iinfo;
 import dataStrucutres.InternalNode;
 import dataStrucutres.Leaf;
@@ -22,19 +23,19 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicReference;
 
-public class ConcurrentBST<K extends Comparable<? super K>, V> implements ITree {
+public class ConcurrentBST<K extends Integer, V extends Object> implements ITree {
 
-    private final InternalNode root;
+    private final Node<K, V> root;
 
     public ConcurrentBST() {
-        //initialization with state clean and null info; null left and right children, null key and value
-        this.root = new InternalNode();
+        //initialization with state clean and null info; dummy1 left child dummy2 right child, dummy2 key and no value
+        this.root = new InternalNode<K, V>();
+
     }
 
     @Override
-    public Leaf find(Comparable key) {
+    public Leaf find(Integer key) {
         Leaf result = search(key).getL();
         if (result.getKey().equals(key)) {
             System.out.println(key + " node found");
@@ -45,7 +46,7 @@ public class ConcurrentBST<K extends Comparable<? super K>, V> implements ITree 
     }
 
     @Override
-    public boolean insert(Comparable key, Object value) {
+    public boolean insert(Integer key, Object value) {
         InternalNode p, newInternal;
         Leaf l, newSibling;
         Leaf newLeaf = new Leaf(key, value);
@@ -71,7 +72,7 @@ public class ConcurrentBST<K extends Comparable<? super K>, V> implements ITree 
                     smallChild = newSibling;
                     bigChild = newLeaf;
                 }
-                newInternal = new InternalNode(new Update(State.CLEAN, null), smallChild, bigChild, max(key, l.getKey()));
+                newInternal = new InternalNode(new Update(State.CLEAN, null), smallChild, bigChild, Math.max(key, l.getKey()));
 
                 //define what to do if the "pointers-swing" fails
                 op = new Iinfo(p, newInternal, l);
@@ -83,7 +84,7 @@ public class ConcurrentBST<K extends Comparable<? super K>, V> implements ITree 
                     return true;
                 } else {
                     //if sombody else has stolen the flag while we were near to conquer it...well help the thief and retry
-                    help(p.update.get());
+                    help((Update) p.update.get());
                 }
             }
 
@@ -92,7 +93,7 @@ public class ConcurrentBST<K extends Comparable<? super K>, V> implements ITree 
     }
 
     @Override
-    public boolean delete(Comparable key) {
+    public boolean delete(Integer key) {
         InternalNode gp, p;
         Leaf l;
         Update pupdate, gpupdate;
@@ -113,7 +114,7 @@ public class ConcurrentBST<K extends Comparable<? super K>, V> implements ITree 
             if (!gpupdate.getState().equals(State.CLEAN)) {
                 //if the grandparent is somehow "busy" help to complete the operation in which gp is involved
                 help(gpupdate);
-            } else if (!pupdate.equals(State.CLEAN)) {
+            } else if (!pupdate.getState().equals(State.CLEAN)) {
                 //else if the parent is busy (and gp is not) help him
                 help(pupdate);
             } else {
@@ -146,11 +147,12 @@ public class ConcurrentBST<K extends Comparable<? super K>, V> implements ITree 
             gp = p;
             p = (InternalNode) l;
             gpupdate = pupdate;
-            pupdate = ((InternalNode) l).update.get();
+            pupdate = (Update) ((InternalNode) l).update.get();
+
             if (target.compareTo(l.getKey()) < 0) {
-                l = ((InternalNode) l).left.get();
+                l = (Node) ((InternalNode) l).left.get();
             } else {
-                l = ((InternalNode) l).right.get();
+                l = (Node) ((InternalNode) l).right.get();
             }
 
         }
@@ -165,15 +167,8 @@ public class ConcurrentBST<K extends Comparable<? super K>, V> implements ITree 
         return (root.getKey() == null);
     }
 
-    public InternalNode getRoot() {
+    public Node<K, V> getRoot() {
         return root;
-    }
-
-    private Comparable max(Comparable key, Comparable key0) {
-        if (key.compareTo(key0) < 0) {
-            return key0;
-        }
-        return key;
     }
 
     private void help(Update u) {
@@ -229,16 +224,16 @@ public class ConcurrentBST<K extends Comparable<? super K>, V> implements ITree 
         }
         Node other;
         if (op.p.left.get() == op.l) {
-            other = op.p.right.get();
+            other = (Node) op.p.right.get();
         } else {
-            other = op.p.left.get();
+            other = (Node) op.p.left.get();
         }
         casChild(op.gp, op.p, other);
         op.gp.update.compareAndSet(op.gp.update.get(), new Update(State.CLEAN, op));
     }
 
-    public void printTree2DotFile() throws FileNotFoundException, UnsupportedEncodingException, IOException {
-        PrintWriter writer = new PrintWriter("BST.dot", "UTF-8");
+    public void printTree2DotFile(String filename) throws FileNotFoundException, UnsupportedEncodingException, IOException {
+        PrintWriter writer = new PrintWriter(filename + "BST.dot", "UTF-8");
         writer.println("digraph BST {");
 
         Queue<Node> queue = new LinkedList<>();
@@ -248,12 +243,15 @@ public class ConcurrentBST<K extends Comparable<? super K>, V> implements ITree 
             Node pop = queue.poll();
             if (pop instanceof InternalNode) {
                 InternalNode i = (InternalNode) pop;
-                Node left = i.left.get();
-                Node right = i.right.get();
+                Node left = (Node) i.left.get();
+                Node right = (Node) i.right.get();
                 writer.println(i + " [shape=box];");
+                System.out.println(i + " [shape=box];");
                 writer.println(i + " -> " + left + ";");
+                System.out.println(i + " -> " + left + ";");
                 writer.println(i + " -> " + right + ";");
-                
+                System.out.println(i + " -> " + right + ";");
+
                 queue.add(left);
                 queue.add(right);
             } else {
@@ -264,7 +262,7 @@ public class ConcurrentBST<K extends Comparable<? super K>, V> implements ITree 
         writer.close();
         Desktop desktop = Desktop.getDesktop();
 
-        desktop.open(new File("BST.dot"));
+        desktop.open(new File(filename + "BST.dot"));
 
     }
 

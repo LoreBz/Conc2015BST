@@ -7,29 +7,11 @@ package dataStrucutres;
 
 /**
  *
- * @author Lorenzo
+ * @author lorenzo
  */
-public enum State {
+public class Dummy {
 
-    /**
-     *
-     */
-    CLEAN,
+    public static final int dummy1 = Integer.MAX_VALUE - 1;
+    public static final int dummy2 = Integer.MAX_VALUE;
 
-    /**
-     *
-     */
-    DFlag,
-
-    /**
-     *
-     */
-    IFlag,
-
-    /**
-     *
-     */
-    MARK
 }
-
-

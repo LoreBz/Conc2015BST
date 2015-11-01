@@ -9,7 +9,7 @@ package dataStrucutres;
  *
  * @author Lorenzo
  */
-public class Leaf extends Node {
+public class Leaf <K extends Integer, V extends Object> extends Node<K, V> {
 
     Object value;
 
@@ -18,7 +18,7 @@ public class Leaf extends Node {
      * @param key the key associated with this Node
      * @param value a value stored in this Leaf
      */
-    public Leaf(Comparable key, Object value) {
+    public Leaf(K key, Object value) {
         super(key);
         this.value = value;
     }
@@ -41,7 +41,13 @@ public class Leaf extends Node {
 
     @Override
     public String toString() {
-        return this.getKey()+"";
+        if (this.getKey() == Dummy.dummy1) {
+            return "Dummy1";
+        } else if (this.getKey() == Dummy.dummy2) {
+            return "Dummy2";
+        } else {
+            return ""+this.getKey() + "";
+        }
     }
     
     

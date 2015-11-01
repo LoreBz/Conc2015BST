@@ -13,10 +13,10 @@ import dataStrucutres.Leaf;
  */
 public interface ITree {
 
-    public Leaf find(Comparable key);
+    public Leaf find(Integer key);
 
-    public boolean insert(Comparable key, Object value);
+    public boolean insert(Integer key, Object value);
 
-    public boolean delete(Comparable key);
+    public boolean delete(Integer key);
 
 }

@@ -5,34 +5,35 @@
  */
 package dataStrucutres;
 
+import java.util.HashMap;
+
 /**
  *
  * @author Lorenzo
+
  *
  */
-public abstract class Node {
+public abstract class Node<K extends Integer, V extends Object> implements Comparable<Node> {
 
-    Comparable key;
+    Integer key;
 
-    /**
-     *
-     * @param key the key used to perform routing inside the tree data structure
-     */
-    public Node(Comparable key) {
+    public Node(Integer key) {
         this.key = key;
-
     }
 
-    /**
-     *
-     * @return the key associated with this Node
-     */
-    public Comparable getKey() {
+    public Integer getKey() {
         return key;
     }
 
-    public void setKey(Comparable key) {
+    public void setKey(Integer key) {
         this.key = key;
+        new HashMap<String, Object>();
+
+    }
+
+    @Override
+    public int compareTo(Node t) {
+        return this.key.compareTo(t.getKey());
     }
 
 }
