@@ -5,9 +5,9 @@
         <group>
             <file>file:/home/lorenzo/Scrivania/Conc2015BST/ConcurrentBST/src/test/Test.java</file>
             <file>file:/home/lorenzo/Scrivania/Conc2015BST/ConcurrentBST/src/dataStrucutres/Node.java</file>
+            <file>file:/home/lorenzo/Scrivania/Conc2015BST/ConcurrentBST/src/myUtil/TaskReport.java</file>
+            <file>file:/home/lorenzo/Scrivania/Conc2015BST/ConcurrentBST/src/test/BTreePrinter.java</file>
             <file>file:/home/lorenzo/Scrivania/Conc2015BST/ConcurrentBST/src/concurrentbst/ConcurrentBST.java</file>
-            <file>file:/home/lorenzo/Scrivania/Conc2015BST/ConcurrentBST/src/dataStrucutres/Leaf.java</file>
-            <file>file:/home/lorenzo/Scrivania/Conc2015BST/ConcurrentBST/src/dataStrucutres/InternalNode.java</file>
         </group>
     </open-files>
 </project-private>
