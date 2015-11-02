@@ -6,11 +6,12 @@
 package test;
 
 import concurrentbst.ConcurrentBST;
+import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -46,18 +47,50 @@ public class Test {
         printTree(tree, "afterConcurrentTest");
     }
 
-    public static void printTree(ConcurrentBST<Integer, Object> tree, String fileTitle) {
+    public static void printTree(ConcurrentBST<Integer, Object> tree, String fileTitle) throws InterruptedException {
+        Calendar calendar = Calendar.getInstance();
+        Date time = calendar.getTime();
+        int hours = time.getHours();
+        int minutes = time.getMinutes();
+        int seconds = time.getSeconds();
+        String filename = fileTitle + hours + "h" + minutes + "m" + seconds + "s_" + "BST";
         try {
-            Calendar calendar = Calendar.getInstance();
-            Date time = calendar.getTime();
-            int hours = time.getHours();
-            int minutes = time.getMinutes();
-            int seconds = time.getSeconds();
-            tree.printTree2DotFile(fileTitle + hours + "h" + minutes + "m" + seconds+"s_");
+
+            tree.printTree2DotFile(filename);
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        String OS = System.getProperty("os.name").toLowerCase();
+        Desktop desktop = Desktop.getDesktop();
+//
+//        try {
+//            desktop.open(new File(filename));
+//        } catch (IOException ex) {
+//            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+
+        try {
+            if (OS.indexOf("win") >= 0) {
+                //Windows OS
+                Runtime.getRuntime().exec( "dot -Tpdf " + filename + ".dot -o " + filename + ".pdf");
+                System.out.println(
+                        "> dot -Tpdf " + filename + ".dot -o " + filename + ".pdf");
+                Thread.sleep(500);
+
+                desktop.open(new File(filename + ".pdf"));
+            } else {
+                desktop.open(new File(filename + ".dot"));
+            }
+
+        } catch (IOException ex) {
+            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
+            if (OS.indexOf("win") >= 0) {
+                System.out.println(
+                        "There are problem in printing the tree\nUnder Windows in order to render the tree and save it into a pdf file you need graphviz\nAvailable from here http://graphviz.org/Download.php");
+            }
         }
 
     }
@@ -103,12 +136,12 @@ public class Test {
             callables.add(c);
         }
         //prepare 5 delete operations (for instance deleting odd keys)
-        for (int i=1; i<=10; i=i+2) {
+        for (int i = 1; i <= 10; i = i + 2) {
             Callable<TaskReport> c = new Operation(tree, OperationType.DELETE, i);
             callables.add(c);
         }
         //prepare 5 find operations (looking for elements witk 5<=element.key<15)
-        for (int i=1; i<=5; i++) {
+        for (int i = 1; i <= 5; i++) {
             Callable<TaskReport> c = new Operation(tree, OperationType.FIND, i);
             callables.add(c);
         }

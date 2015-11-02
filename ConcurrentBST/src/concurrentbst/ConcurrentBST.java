@@ -233,7 +233,7 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
     }
 
     public void printTree2DotFile(String filename) throws FileNotFoundException, UnsupportedEncodingException, IOException {
-        PrintWriter writer = new PrintWriter(filename + "BST.dot", "UTF-8");
+        PrintWriter writer = new PrintWriter(filename+".dot", "UTF-8");
         writer.println("digraph BST {");
 
         Queue<Node> queue = new LinkedList<>();
@@ -260,9 +260,7 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
         }
         writer.println("}");
         writer.close();
-        Desktop desktop = Desktop.getDesktop();
-
-        desktop.open(new File(filename + "BST.dot"));
+        
 
     }
 
