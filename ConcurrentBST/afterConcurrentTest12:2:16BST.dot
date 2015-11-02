@@ -1,0 +1,20 @@
+digraph BST {
+iDummy2 [shape=box];
+iDummy2 -> iDummy1;
+iDummy2 -> Dummy2;
+iDummy1 [shape=box];
+iDummy1 -> i5;
+iDummy1 -> Dummy1;
+i5 [shape=box];
+i5 -> i3;
+i5 -> i8;
+i3 [shape=box];
+i3 -> 2;
+i3 -> 4;
+i8 [shape=box];
+i8 -> 6;
+i8 -> i9;
+i9 [shape=box];
+i9 -> 8;
+i9 -> 10;
+}

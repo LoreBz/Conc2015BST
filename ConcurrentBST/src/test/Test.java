@@ -8,11 +8,11 @@ package test;
 import concurrentbst.ConcurrentBST;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -20,6 +20,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import myUtil.Operation;
+import myUtil.OperationType;
 import myUtil.TaskReport;
 
 /**
@@ -32,16 +34,16 @@ public class Test {
         ConcurrentBST<Integer, Object> tree = new ConcurrentBST<>();
         //sequential test
         try {
-            someSequentialInsert(tree);
-            printTree(tree, "insertion");
-//        Thread.sleep(500);
-            someSequentialDelete(tree);
-            printTree(tree, "deletion");
+//            someSequentialInsert(tree);
+//            printTree(tree, "insertion");
+//            someSequentialDelete(tree);
+//            printTree(tree, "deletion");
             //concurrent test
-            startConcurrentTest();
+            startConcurrentTest(tree);
         } catch (ExecutionException ex) {
             Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
         }
+        printTree(tree, "afterConcurrentTest");
     }
 
     public static void printTree(ConcurrentBST<Integer, Object> tree, String fileTitle) {
@@ -90,17 +92,28 @@ public class Test {
         //1,2,3,5,6,10,12,14
     }
 
-    public static void startConcurrentTest() throws InterruptedException, ExecutionException {
+    public static void startConcurrentTest(final ConcurrentBST<Integer, Object> tree) throws InterruptedException, ExecutionException {
         ExecutorService executorService = Executors.newFixedThreadPool(10);
 
-        Set<Callable<TaskReport>> callables = new HashSet<Callable<TaskReport>>();
-        callables.add(new Callable<TaskReport>() {
+        List<Callable<TaskReport>> callables = new ArrayList<>();
 
-            @Override
-            public TaskReport call() throws Exception {
-                return new TaskReport();
-            }
-        });
+        //prepare 10 insert operations
+        for (int i = 1; i <= 10; i++) {
+            Callable<TaskReport> c = new Operation(tree, OperationType.INSERT, i);
+            callables.add(c);
+        }
+        //prepare 5 delete operations (for instance deleting odd keys)
+        for (int i=1; i<=10; i=i+2) {
+            Callable<TaskReport> c = new Operation(tree, OperationType.DELETE, i);
+            callables.add(c);
+        }
+        //prepare 5 find operations (looking for elements witk 5<=element.key<15)
+        for (int i=1; i<=5; i++) {
+            Callable<TaskReport> c = new Operation(tree, OperationType.FIND, i);
+            callables.add(c);
+        }
+        //randomize order of operations before submitting them all together
+        //Collections.shuffle(callables);
         List<Future<TaskReport>> futures = executorService.invokeAll(callables);
 
 //        for (Future<String> future : futures) {
