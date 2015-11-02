@@ -53,7 +53,7 @@ public class Test {
             int hours = time.getHours();
             int minutes = time.getMinutes();
             int seconds = time.getSeconds();
-            tree.printTree2DotFile(fileTitle + hours + ":" + minutes + ":" + seconds);
+            tree.printTree2DotFile(fileTitle + hours + "h" + minutes + "m" + seconds+"s_");
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
