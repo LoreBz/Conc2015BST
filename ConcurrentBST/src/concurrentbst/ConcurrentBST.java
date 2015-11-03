@@ -188,8 +188,8 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
         casChild(op.p, op.l, op.newInternal);
         //whnever a flag is changed a new Update instance is allocated in memory, therefore if op.p.update 
         //is not modified we can perform this pointer-swing without problem
-        op.p.update.set(new Update(State.CLEAN, op));
-        //op.p.update.compareAndSet(op.p.update.get(), new Update(State.CLEAN, op));
+        //op.p.update.set(new Update(State.CLEAN, op));
+        op.p.update.compareAndSet(op.p.update.get(), new Update(State.CLEAN, op));
     }
 
     private void casChild(InternalNode parent, Node old, Node newInternal) {

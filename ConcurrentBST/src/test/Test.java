@@ -126,7 +126,7 @@ public class Test {
     }
 
     public static void startConcurrentTest(final ConcurrentBST<Integer, Object> tree) throws InterruptedException, ExecutionException {
-        ExecutorService executorService = Executors.newFixedThreadPool(10);
+        ExecutorService executorService = Executors.newFixedThreadPool(20);
 
         List<Callable<TaskReport>> callables = new ArrayList<>();
 

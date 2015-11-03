@@ -1425,7 +1425,16 @@ is divided into following sections:
         <!-- Empty placeholder for easier customization. -->
         <!-- You can override this target in the ../build.xml file. -->
     </target>
-    <target depends="init,deps-clean,-do-clean,-post-clean" description="Clean build products." name="clean"/>
+    <target depends="init,deps-clean,-do-clean,-post-clean" description="Clean build products." name="clean">
+        <echo message="Clean has been called" />
+        <delete>
+            <fileset dir="." includes="**/*.dot"/>
+        </delete>
+        <delete>
+            <fileset dir="." includes="**/*.pdf"/>
+        </delete>
+        <echo message=".dot .pdf output files has been deleted" />
+    </target>
     <target name="-check-call-dep">
         <property file="${call.built.properties}" prefix="already.built."/>
         <condition property="should.call.dep">
