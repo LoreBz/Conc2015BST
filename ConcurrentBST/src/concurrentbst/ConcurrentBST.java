@@ -6,7 +6,6 @@
 package concurrentbst;
 
 import dataStrucutres.Dinfo;
-import dataStrucutres.Dummy;
 import dataStrucutres.Iinfo;
 import dataStrucutres.InternalNode;
 import dataStrucutres.Leaf;
@@ -15,8 +14,6 @@ import dataStrucutres.SearchOutput;
 import dataStrucutres.State;
 import dataStrucutres.Update;
 import interfaces.ITree;
-import java.awt.Desktop;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -38,9 +35,9 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
     public Leaf find(Integer key) {
         Leaf result = search(key).getL();
         if (result.getKey().equals(key)) {
-            System.out.println(key + " node found");
+            System.out.println("node " + key + " found");
         } else {
-            System.out.println(key + " node not found");
+            System.out.println("node " + key + " not found");
         }
         return search(key).getL();
     }
@@ -72,12 +69,15 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
                     smallChild = newSibling;
                     bigChild = newLeaf;
                 }
-                newInternal = new InternalNode(new Update(State.CLEAN, null), smallChild, bigChild, Math.max(key, l.getKey()));
+                int newkey = Math.max(key, l.getKey());
+                newInternal = new InternalNode(new Update(State.CLEAN, null),
+                        smallChild, bigChild, newkey);
 
                 //define what to do if the "pointers-swing" fails
                 op = new Iinfo(p, newInternal, l);
 
-                boolean result = p.update.compareAndSet(pupdate, new Update(State.IFlag, op));
+                boolean result = p.update.compareAndSet(pupdate, new Update(
+                        State.IFlag, op));
                 if (result) {
                     //then we let the helpinsert to do complete the "pointers-swing"
                     helpinsert(op);
@@ -121,7 +121,8 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
                 //if both gp and p are not busy
                 op = new Dinfo(gp, p, l, pupdate);
                 //try to flag the gp
-                boolean result = gp.update.compareAndSet(gpupdate, new Update(State.DFlag, op));
+                boolean result = gp.update.compareAndSet(gpupdate, new Update(
+                        State.DFlag, op));
                 if (result) {
                     if (helpdelete(op)) {
                         return true;
@@ -158,7 +159,8 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
         }
         //if l is the dummy node
         if (l == null) {
-            throw new NullPointerException("There is no node associated with key " + target);
+            throw new NullPointerException(
+                    "There is no node associated with key " + target);
         }
         return new SearchOutput(gp, p, (Leaf) l, pupdate, gpupdate);
     }
@@ -183,7 +185,8 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
 
     private void helpinsert(Iinfo op) {
         if (op == null || !(op instanceof Iinfo)) {
-            throw new NullPointerException("It is not possible to complete this operation because the requested operation is null");
+            throw new NullPointerException(
+                    "It is not possible to complete this operation because the requested operation is null");
         }
         casChild(op.p, op.l, op.newInternal);
         //whnever a flag is changed a new Update instance is allocated in memory, therefore if op.p.update 
@@ -207,13 +210,15 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
         if (op == null || !(op instanceof Dinfo)) {
             throw new NullPointerException();
         }
-        boolean result = op.p.update.compareAndSet(op.pupdate, new Update(State.MARK, op));
+        boolean result = op.p.update.compareAndSet(op.pupdate, new Update(
+                State.MARK, op));
         if (result || op.pupdate.getState().equals(State.MARK)) {
             helpmarked(op);
             return true;
         } else {
             help(op.pupdate);
-            op.gp.update.compareAndSet(op.gp.update.get(), new Update(State.CLEAN, op));
+            op.gp.update.compareAndSet(op.gp.update.get(), new Update(
+                    State.CLEAN, op));
             return false;
         }
     }
@@ -229,11 +234,12 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
             other = (Node) op.p.left.get();
         }
         casChild(op.gp, op.p, other);
-        op.gp.update.compareAndSet(op.gp.update.get(), new Update(State.CLEAN, op));
+        op.gp.update.compareAndSet(op.gp.update.get(), new Update(State.CLEAN,
+                op));
     }
 
     public void printTree2DotFile(String filename) throws FileNotFoundException, UnsupportedEncodingException, IOException {
-        PrintWriter writer = new PrintWriter(filename+".dot", "UTF-8");
+        PrintWriter writer = new PrintWriter(filename + ".dot", "UTF-8");
         writer.println("digraph BST {");
 
         Queue<Node> queue = new LinkedList<>();
@@ -246,11 +252,11 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
                 Node left = (Node) i.left.get();
                 Node right = (Node) i.right.get();
                 writer.println(i + " [shape=box];");
-                System.out.println(i + " [shape=box];");
+                //System.out.println(i + " [shape=box];");
                 writer.println(i + " -> " + left + ";");
-                System.out.println(i + " -> " + left + ";");
+                //System.out.println(i + " -> " + left + ";");
                 writer.println(i + " -> " + right + ";");
-                System.out.println(i + " -> " + right + ";");
+                //System.out.println(i + " -> " + right + ";");
 
                 queue.add(left);
                 queue.add(right);
@@ -260,7 +266,6 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
         }
         writer.println("}");
         writer.close();
-        
 
     }
 

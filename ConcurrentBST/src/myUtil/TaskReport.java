@@ -5,36 +5,67 @@
  */
 package myUtil;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  * @author lorenzo
  */
-public class TaskReport {
+public class TaskReport implements Comparable<TaskReport> {
 
-    long start, end;
+    Long millisStart, millisEnd;
+    Long nanoStart, nanoEnd;
+    Map<String, Object> retvalues;
 
     public TaskReport() {
-//        start = System.currentTimeMillis();
-//        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd,yyyy HH:mm");
-//        Date resultdate = new Date(start);
-//        System.out.println(sdf.format(resultdate));
-        //JOptionPane.showMessageDialog(null, sdf.format(resultdate));
+        this.retvalues = new HashMap<>();
     }
 
-    public long getStart() {
-        return start;
+    public Long getMillisStart() {
+        return millisStart;
     }
 
-    public void setStart(long start) {
-        this.start = start;
+    public void setMillisStart(Long millisStart) {
+        this.millisStart = millisStart;
     }
 
-    public long getEnd() {
-        return end;
+    public Long getMillisEnd() {
+        return millisEnd;
     }
 
-    public void setEnd(long end) {
-        this.end = end;
+    public void setMillisEnd(Long millisEnd) {
+        this.millisEnd = millisEnd;
+    }
+
+    public Long getNanoStart() {
+        return nanoStart;
+    }
+
+    public void setNanoStart(Long nanoStart) {
+        this.nanoStart = nanoStart;
+    }
+
+    public Long getNanoEnd() {
+        return nanoEnd;
+    }
+
+    public void setNanoEnd(Long nanoEnd) {
+        this.nanoEnd = nanoEnd;
+    }
+
+    public Map<String, Object> getRetvalues() {
+        return retvalues;
+    }
+
+    @Override
+    public int compareTo(TaskReport o) {
+        if (this.millisStart.equals(o.getMillisStart())) {
+            return this.nanoStart.compareTo(o.getNanoStart());
+        } else {
+            return this.millisStart.compareTo(o.getMillisStart());
+        }
+
     }
 
 }

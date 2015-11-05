@@ -1433,7 +1433,10 @@ is divided into following sections:
         <delete>
             <fileset dir="." includes="**/*.pdf"/>
         </delete>
-        <echo message=".dot .pdf output files has been deleted" />
+        <delete>
+            <fileset dir="." includes="**/*.csv"/>
+        </delete>
+        <echo message=".dot .pdf .csv output files has been deleted" />
     </target>
     <target name="-check-call-dep">
         <property file="${call.built.properties}" prefix="already.built."/>

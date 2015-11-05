@@ -6,6 +6,8 @@
 package myUtil;
 
 import concurrentbst.ConcurrentBST;
+import dataStrucutres.Leaf;
+import java.text.SimpleDateFormat;
 import java.util.concurrent.Callable;
 
 /**
@@ -27,21 +29,33 @@ public class Operation implements Callable<TaskReport> {
     @Override
     public TaskReport call() throws Exception {
         TaskReport retval = new TaskReport();
-        retval.setStart(System.currentTimeMillis());
+        boolean opretval;
+        retval.setMillisStart(System.currentTimeMillis());
+        retval.setNanoStart(System.nanoTime());
         switch (type) {
             case INSERT:
-                tree.insert(key, "" + key);
+                opretval = tree.insert(key, "" + key);
+                retval.retvalues.put("OpDescription",
+                        "INSERT(" + key + "):" + opretval);
                 break;
             case DELETE:
-                tree.delete(key);
+                opretval = tree.delete(key);
+                retval.retvalues.put("OpDescription",
+                        "DELETE(" + key + "):" + opretval);
                 break;
             case FIND:
-                tree.find(key);
+                Leaf out = tree.find(key);
+                retval.retvalues.put("OpDescription",
+                        "FIND(" + key + "):" + (out.getKey() == key));
                 break;
             default:
                 break;
         }
-        retval.setEnd(System.currentTimeMillis());
+        retval.setMillisEnd(System.currentTimeMillis());
+        retval.setNanoEnd(System.nanoTime());
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss:SSS");
+        retval.retvalues.put("StartNanoSec", df.format(retval.getMillisStart()) + ":" + retval.getNanoStart());
+        retval.retvalues.put("EndNanoSec", df.format(retval.getMillisEnd()) + ":" + retval.getNanoEnd());
         return retval;
 
     }

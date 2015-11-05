@@ -34,7 +34,7 @@ public class InternalNode<K extends Integer, V extends Object> extends Node<K, V
         super(key);
     }
 
-    public InternalNode(Update update, Node left, Node right, K key) {
+    public InternalNode(Update update, Node left, Node right, Integer key) {
         super(key);
         this.update = new AtomicReference<>(update);
         this.left = new AtomicReference<>(left);
