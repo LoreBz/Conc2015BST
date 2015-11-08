@@ -37,11 +37,13 @@ public class Operation implements Callable<TaskReport> {
                 opretval = tree.insert(key, "" + key);
                 retval.retvalues.put("OpDescription",
                         "INSERT(" + key + "):" + opretval);
+                retval.retvalues.put("result", opretval);
                 break;
             case DELETE:
                 opretval = tree.delete(key);
                 retval.retvalues.put("OpDescription",
                         "DELETE(" + key + "):" + opretval);
+                retval.retvalues.put("result", opretval);
                 break;
             case FIND:
                 Leaf out = tree.find(key);
@@ -56,6 +58,8 @@ public class Operation implements Callable<TaskReport> {
         SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss:SSS");
         retval.retvalues.put("StartNanoSec", df.format(retval.getMillisStart()) + ":" + retval.getNanoStart());
         retval.retvalues.put("EndNanoSec", df.format(retval.getMillisEnd()) + ":" + retval.getNanoEnd());
+        retval.retvalues.put("key", key);
+        
         return retval;
 
     }

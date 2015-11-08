@@ -16,6 +16,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
+import javax.swing.SwingWorker;
 import test.Test;
 
 /**
@@ -27,14 +29,14 @@ public class WizardTest extends javax.swing.JFrame {
     String textInsert;
     String textDelete;
     String textFind;
-    ConcurrentBST tree;
+    //ConcurrentBST tree;
     List<Operation> tasks;
 
     /**
      * Creates new form WizardTest
      */
     public WizardTest(ConcurrentBST tree) {
-        this.tree = tree;
+        //this.tree = tree;
         this.tasks = new ArrayList<>();
         initComponents();
     }
@@ -59,6 +61,7 @@ public class WizardTest extends javax.swing.JFrame {
         btn_edit = new javax.swing.JButton();
         spinner_threads = new javax.swing.JSpinner();
         jLabel1 = new javax.swing.JLabel();
+        jpbar = new javax.swing.JProgressBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -119,6 +122,8 @@ public class WizardTest extends javax.swing.JFrame {
 
         jLabel1.setText("Number of working threads");
 
+        jpbar.setEnabled(false);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -127,32 +132,35 @@ public class WizardTest extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(jLabel6)
-                                .addComponent(TFFind, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
-                                    .addComponent(TFDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(TFInsert, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(99, 99, 99)
+                        .addComponent(jLabel1)
+                        .addGap(137, 137, 137))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(btn_check)
-                                .addGap(18, 18, 18)
-                                .addComponent(btn_edit))
-                            .addComponent(spinner_threads, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btn_go)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(109, 109, 109)
-                .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel6)
+                                        .addComponent(TFFind, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel4)
+                                            .addComponent(TFDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel2)
+                                            .addComponent(TFInsert, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(btn_check)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btn_edit))
+                                    .addComponent(spinner_threads, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btn_go))
+                            .addComponent(jpbar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -169,7 +177,7 @@ public class WizardTest extends javax.swing.JFrame {
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(TFFind, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(spinner_threads, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -178,7 +186,9 @@ public class WizardTest extends javax.swing.JFrame {
                     .addComponent(btn_check)
                     .addComponent(btn_edit)
                     .addComponent(btn_go))
-                .addContainerGap())
+                .addGap(18, 18, 18)
+                .addComponent(jpbar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -219,14 +229,6 @@ public class WizardTest extends javax.swing.JFrame {
             return;
         }
 
-        List<Operation> opInserts = parseInput(textInsert, OperationType.INSERT);
-        List<Operation> opDeletes = parseInput(textDelete, OperationType.DELETE);
-        List<Operation> opFinds = parseInput(textFind, OperationType.FIND);
-
-        tasks.addAll(opInserts);
-        tasks.addAll(opDeletes);
-        tasks.addAll(opFinds);
-
         JOptionPane.showMessageDialog(rootPane, "Input is fine, you can go!");
         TFInsert.setEnabled(false);
         TFDelete.setEnabled(false);
@@ -241,26 +243,53 @@ public class WizardTest extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_checkActionPerformed
 
     private void btn_goActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_goActionPerformed
-        try {
-            // TODO add your handling code here:
-            Integer numbThreads = (Integer) spinner_threads.getValue();
-            Test.startConcurrentTest(tree, tasks, numbThreads);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(WizardTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(WizardTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(WizardTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ExecutionException ex) {
-            Logger.getLogger(WizardTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(WizardTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        try {
-            Test.printTree(tree, "afterTest");
-        } catch (InterruptedException ex) {
-            Logger.getLogger(WizardTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+
+        SwingWorker<Void, Void> sw = new SwingWorker<Void, Void>() {
+
+            protected Void doInBackground() throws Exception {
+                jpbar.setEnabled(true);
+                jpbar.setIndeterminate(true);
+                ConcurrentBST<Integer, Object> tree = new ConcurrentBST<>();
+                List<Operation> opInserts = parseInput(textInsert, OperationType.INSERT, tree);
+                List<Operation> opDeletes = parseInput(textDelete, OperationType.DELETE, tree);
+                List<Operation> opFinds = parseInput(textFind, OperationType.FIND, tree);
+
+                tasks.addAll(opInserts);
+                tasks.addAll(opDeletes);
+                tasks.addAll(opFinds);
+                try {
+                    // TODO add your handling code here:
+                    Integer numbThreads = (Integer) spinner_threads.getValue();
+                    Test.startConcurrentTest(tree, tasks, numbThreads);
+                } catch (InterruptedException | ExecutionException ex) {
+                    System.out.println("Some error in executing parallel tasks");
+                    Logger.getLogger(WizardTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (FileNotFoundException ex) {
+                    System.out.println("Some error in writing to log");
+                    Logger.getLogger(WizardTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (UnsupportedEncodingException ex) {
+                    System.out.println("Some error in writing to log");
+                    Logger.getLogger(WizardTest.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    System.out.println("Some error in writing to log");
+                    Logger.getLogger(WizardTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                try {
+                    Test.printTree(tree, "afterTest");
+                } catch (InterruptedException ex) {
+                    System.out.println("Some error in rendering the tree");
+                    Logger.getLogger(WizardTest.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return null;
+            }
+
+            @Override
+            protected void done() {
+                jpbar.setIndeterminate(false);
+                jpbar.setEnabled(false);
+            }
+        };
+        sw.execute();
     }//GEN-LAST:event_btn_goActionPerformed
 
     private void btn_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_editActionPerformed
@@ -287,6 +316,7 @@ public class WizardTest extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JProgressBar jpbar;
     private javax.swing.JSpinner spinner_threads;
     // End of variables declaration//GEN-END:variables
 
@@ -326,7 +356,7 @@ public class WizardTest extends javax.swing.JFrame {
         }
     }
 
-    private List<Operation> parseInput(String input_keys, OperationType optype) {
+    private List<Operation> parseInput(String input_keys, OperationType optype, ConcurrentBST<Integer, Object> tree) {
         ArrayList<Operation> retval = new ArrayList<>();
         String[] toParse = input_keys.split(",");
         ArrayList<String> strings = new ArrayList<>(Arrays.asList(toParse));
@@ -352,4 +382,9 @@ public class WizardTest extends javax.swing.JFrame {
         }
         return retval;
     }
+
+    public JProgressBar getJpbar() {
+        return jpbar;
+    }
+
 }

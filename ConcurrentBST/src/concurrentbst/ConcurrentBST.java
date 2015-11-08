@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class ConcurrentBST<K extends Integer, V extends Object> implements ITree {
@@ -27,8 +28,33 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
 
     public ConcurrentBST() {
         //initialization with state clean and null info; dummy1 left child dummy2 right child, dummy2 key and no value
-        this.root = new InternalNode<K, V>();
+        this.root = new InternalNode<>();
 
+    }
+
+    private SearchOutput search(Comparable target) throws IllegalStateException, NullPointerException {
+        if (isEmpty()) {
+            return new SearchOutput(null, null, null, null, null);
+        }
+
+        InternalNode gp = null, p = null;
+        Node l = root;
+        Update gpupdate = null, pupdate = null;
+        //while l points to an internal node
+        while (l instanceof InternalNode) {
+            gp = p;
+            p = (InternalNode) l;
+            gpupdate = pupdate;
+            pupdate = (Update) ((InternalNode) l).update.get();
+
+            if (target.compareTo(l.getKey()) < 0) {
+                l = (Node) ((InternalNode) l).left.get();
+            } else {
+                l = (Node) ((InternalNode) l).right.get();
+            }
+
+        }
+        return new SearchOutput(gp, p, (Leaf) l, pupdate, gpupdate);
     }
 
     @Override
@@ -73,13 +99,13 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
                 newInternal = new InternalNode(new Update(State.CLEAN, null),
                         smallChild, bigChild, newkey);
 
-                //define what to do if the "pointers-swing" fails
+                //define what to do after iflag
                 op = new Iinfo(p, newInternal, l);
-
+                //iflag
                 boolean result = p.update.compareAndSet(pupdate, new Update(
                         State.IFlag, op));
                 if (result) {
-                    //then we let the helpinsert to do complete the "pointers-swing"
+                    //then we let the helpinsert to complete the "pointers-swing"
                     helpinsert(op);
                     return true;
                 } else {
@@ -120,7 +146,7 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
             } else {
                 //if both gp and p are not busy
                 op = new Dinfo(gp, p, l, pupdate);
-                //try to flag the gp
+                //dflag
                 boolean result = gp.update.compareAndSet(gpupdate, new Update(
                         State.DFlag, op));
                 if (result) {
@@ -133,36 +159,6 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
             }
         }
 
-    }
-
-    private SearchOutput search(Comparable target) throws IllegalStateException, NullPointerException {
-        if (isEmpty()) {
-            return new SearchOutput(null, null, null, null, null);
-        }
-
-        InternalNode gp = null, p = null;
-        Node l = root;
-        Update gpupdate = null, pupdate = null;
-        //while l points to an internal node
-        while (l instanceof InternalNode) {
-            gp = p;
-            p = (InternalNode) l;
-            gpupdate = pupdate;
-            pupdate = (Update) ((InternalNode) l).update.get();
-
-            if (target.compareTo(l.getKey()) < 0) {
-                l = (Node) ((InternalNode) l).left.get();
-            } else {
-                l = (Node) ((InternalNode) l).right.get();
-            }
-
-        }
-        //if l is the dummy node
-        if (l == null) {
-            throw new NullPointerException(
-                    "There is no node associated with key " + target);
-        }
-        return new SearchOutput(gp, p, (Leaf) l, pupdate, gpupdate);
     }
 
     public boolean isEmpty() {
@@ -188,11 +184,11 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
             throw new NullPointerException(
                     "It is not possible to complete this operation because the requested operation is null");
         }
+        //ichild
         casChild(op.p, op.l, op.newInternal);
-        //whnever a flag is changed a new Update instance is allocated in memory, therefore if op.p.update 
-        //is not modified we can perform this pointer-swing without problem
-        //op.p.update.set(new Update(State.CLEAN, op));
-        op.p.update.compareAndSet(op.p.update.get(), new Update(State.CLEAN, op));
+        //iunflag
+        op.p.update.compareAndSet(op.p.update.get(), new Update(State.CLEAN, null));
+
     }
 
     private void casChild(InternalNode parent, Node old, Node newInternal) {
@@ -216,9 +212,10 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
             helpmarked(op);
             return true;
         } else {
-            help(op.pupdate);
+            help((Update) op.p.update.get());
+            //backtrack CAS
             op.gp.update.compareAndSet(op.gp.update.get(), new Update(
-                    State.CLEAN, op));
+                    State.CLEAN, null));
             return false;
         }
     }
@@ -234,8 +231,9 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
             other = (Node) op.p.left.get();
         }
         casChild(op.gp, op.p, other);
+        //dunflag
         op.gp.update.compareAndSet(op.gp.update.get(), new Update(State.CLEAN,
-                op));
+                null));
     }
 
     public void printTree2DotFile(String filename) throws FileNotFoundException, UnsupportedEncodingException, IOException {
@@ -267,6 +265,30 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
         writer.println("}");
         writer.close();
 
+    }
+
+    public List<Integer> keySet() {
+        List<Integer> keylist = new LinkedList<>();
+
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            Node pop = queue.poll();
+            if (pop instanceof InternalNode) {
+                InternalNode i = (InternalNode) pop;
+                Node left = (Node) i.left.get();
+                Node right = (Node) i.right.get();
+
+                queue.add(left);
+                queue.add(right);
+            } else {
+                Leaf l = (Leaf) pop;
+                keylist.add(l.getKey());
+            }
+        }
+
+        return keylist;
     }
 
 }

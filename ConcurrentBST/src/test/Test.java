@@ -12,12 +12,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -45,18 +44,7 @@ public class Test {
     public static void main(String[] args) throws InterruptedException {
         setLookAndFeel();
         final ConcurrentBST<Integer, Object> tree = new ConcurrentBST<>();
-        //sequential test
-        //     try {
-//            someSequentialInsert(tree);
-//            printTree(tree, "insertion");
-//            someSequentialDelete(tree);
-//            printTree(tree, "deletion");
 
-//concurrent test
-//            startConcurrentTest(tree);
-//        } catch (ExecutionException ex) {
-//            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-//        }
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 WizardTest wizardTest = new WizardTest(tree);
@@ -65,11 +53,11 @@ public class Test {
             }
         });
 
-        // printTree(tree, "afterConcurrentTest");
     }
 
     public static void printTree(ConcurrentBST<Integer, Object> tree, String fileTitle) throws InterruptedException {
         Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
         Date time = calendar.getTime();
         int hours = time.getHours();
         int minutes = time.getMinutes();
@@ -86,18 +74,11 @@ public class Test {
 
         String OS = System.getProperty("os.name").toLowerCase();
         Desktop desktop = Desktop.getDesktop();
-//
-//        try {
-//            desktop.open(new File(filename));
-//        } catch (IOException ex) {
-//            Logger.getLogger(Test.class.getName()).log(Level.SEVERE, null, ex);
-//        }
 
         try {
             if (OS.indexOf("win") >= 0) {
                 //Windows OS
-//                System.out.println("cmd /C: set PATH=%PATH%;Graphviz2.38\\bin");
-//                Runtime.getRuntime().exec("set PATH=%PATH%;Graphviz2.38\\bin");
+
                 System.out.println(
                         "> .\\Graphviz2.38\\bin\\dot -Tpdf " + filename + ".dot -o " + filename + ".pdf");
                 Runtime.getRuntime().exec(
@@ -181,9 +162,16 @@ public class Test {
     }
 
     public static void startConcurrentTest(ConcurrentBST<Integer, Object> tree, List<Operation> tasks, Integer numbThreads) throws InterruptedException, FileNotFoundException, UnsupportedEncodingException, ExecutionException, IOException {
-        String reportFilename = "report.csv";
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        Date time = calendar.getTime();
+        int hours = time.getHours();
+        int minutes = time.getMinutes();
+        int seconds = time.getSeconds();
+        String fileheader = hours + "h" + minutes + "m" + seconds + "s_";
+        String reportFilename = "report" + fileheader + ".csv";
         PrintWriter reportWriter = new PrintWriter(reportFilename, "UTF-8");
-        reportWriter.println("Description,start,end,nanoStart,nanoEnd");
+        reportWriter.println("Description,nanoStart,nanoEnd");
         System.out.println("Preparing " + tasks.size() + " operations to be executed with a pool of " + numbThreads + " threads"
         );
         Collections.shuffle(tasks);
@@ -197,19 +185,42 @@ public class Test {
             reports.add(future.get());
         }
         Collections.sort(reports);
+        List<Integer> insertions = new ArrayList<>();
+        List<Integer> deletions = new ArrayList<>();
         for (TaskReport tr : reports) {
-//            Date dateStart = new Date(tr.getStart());
-//            Date dateEnd = new Date(tr.getEnd());
-            //SimpleDateFormat dfFormat = new SimpleDateFormat("HH:mm:ss:SSSSSSS");
-            //String dateTextStart = new DecimalFormat("#.##########").format(dateStart)
-            //String dateTextEnd = new DecimalFormat("#.##########").format(dateEnd)
-//            String dateTextStart = dfFormat.format(dateStart);
-//            String dateTextEnd = dfFormat.format(dateEnd);
-            //System.out.println("solution Time : " + new DecimalFormat("#.##########").format(seconds) + " Seconds");
             Map<String, Object> param = tr.getRetvalues();
+            if (((String) param.get("OpDescription")).contains("INSERT")) {
+                if ((boolean) param.get("result")) {
+                    insertions.add((Integer) param.get("key"));
+                }
+
+            } else if (((String) param.get("OpDescription")).contains("DELETE")) {
+                if ((boolean) param.get("result")) {
+                    deletions.add((Integer) param.get("key"));
+                }
+            }
             reportWriter.println(param.get("OpDescription") + "," + /*param.get("StartNanoSec") + "," + param.get("EndNanoSec") + "," +*/ tr.getNanoStart() + "," + tr.getNanoEnd());
         }
         reportWriter.close();
+        LinkedList<Integer> findNodes = (LinkedList<Integer>) tree.keySet();
+        insertions.removeAll(Collections.singleton(null));
+        deletions.removeAll(Collections.singleton(null));
+        Collections.sort(insertions);
+        Collections.sort(deletions);
+        System.out.println("Inserted\n" + insertions);
+        System.out.println("Deleted\n" + deletions);
+        try {
+            for (int i : deletions) {
+                insertions.remove(insertions.indexOf(i));
+            }
+        } catch (Exception e) {
+            System.out.println("Something wring with insertions/deletions ratio");
+        }
+
+        Collections.sort(insertions);
+        System.out.println("effective op\n" + insertions);
+        Collections.sort(findNodes);
+        System.out.println("keyset\n" + findNodes);
         Thread.sleep(500);
         Desktop desktop = Desktop.getDesktop();
         desktop.open(new File(reportFilename));

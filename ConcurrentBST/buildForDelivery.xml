@@ -30,6 +30,16 @@
             <echo message="Clean has been called" />
             <delete dir="${build.dir}" />
             <echo message="${build.dir} has been deleted" />
+            <delete>
+            <fileset dir="." includes="**/*.dot"/>
+        </delete>
+        <delete>
+            <fileset dir="." includes="**/*.pdf"/>
+        </delete>
+        <delete>
+            <fileset dir="." includes="**/*.csv"/>
+        </delete>
+        <echo message=".dot .pdf .csv output files has been deleted" />
         </target>
         <target name="compile" depends="init">
             <echo message="Compile target has been called" />
