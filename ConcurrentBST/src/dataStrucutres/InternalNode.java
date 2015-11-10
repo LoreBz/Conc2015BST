@@ -52,7 +52,7 @@ public class InternalNode<K extends Integer, V extends Object> extends Node<K, V
         } else if (this.getKey() == Dummy.dummy2) {
             return "iDummy2";
         } else {
-            return "i"+this.getKey() + "";
+            return "i" + this.getKey() + "";
         }
     }
 
