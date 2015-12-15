@@ -1,2 +1,6 @@
 /ConcurrentBST/build/
 /ConcurrentBST/dist/
+/ConcurrentBST/nbproject/
+/ConcurrentBST/*.pdf
+/ConcurrentBST/*.txt
+/ConcurrentBST/manifest.mf

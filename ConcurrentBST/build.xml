@@ -1,73 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- You may freely edit this file. See commented blocks below for -->
-<!-- some examples of how to customize the build. -->
-<!-- (If you delete it and reopen the project it will be recreated.) -->
-<!-- By default, only the Clean and Build commands use this build script. -->
-<!-- Commands such as Run, Debug, and Test only use this build script if -->
-<!-- the Compile on Save feature is turned off for the project. -->
-<!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
-<!-- in the project's Project Properties dialog box.-->
-<project name="ConcurrentBST" default="default" basedir=".">
-    <description>Builds, tests, and runs the project ConcurrentBST.</description>
-    <import file="nbproject/build-impl.xml"/>
-    <!--
+    <!-- ================================= 
+    Introduction to Service Design and Engineering Laboratory
+    Description: ANT build script for the session on JAXB and Dozer 
+    Author: cdparra
+    
+    Notes: 
+    
+    * This build file includes targets to download and install in your local project the Apache IVY jar
+    * IVY is used to manage dependencies on projects (e.g., jaxb libraries, jackson libraries for json, etc.) 
+    * 
+       TO USE IVY IN YOUR PROJECTS IN ORDER TO GET MANAGE DEPENDENCIES, MAKE SURE THE FOLLOWING LINES ARE
+       IN YOUR BUILD.XML UNTILL 'IVY-END-LINE'
+       
+       # The target "download-ivy" and "install-ivy" will download the ivy jar and place it in the "ivy" folder
+       # 
+-->
+    <project name="Concurrency2015" default="compile" basedir=".">
+        <!-- PART 1: General properties definitions -->
+        <property name="build.dir" value="build" />
+        <property name="src.dir" value="src" />
 
-    There exist several targets which are by default empty and which can be 
-    used for execution of your tasks. These targets are usually executed 
-    before and after some main targets. They are: 
-
-      -pre-init:                 called before initialization of project properties
-      -post-init:                called after initialization of project properties
-      -pre-compile:              called before javac compilation
-      -post-compile:             called after javac compilation
-      -pre-compile-single:       called before javac compilation of single file
-      -post-compile-single:      called after javac compilation of single file
-      -pre-compile-test:         called before javac compilation of JUnit tests
-      -post-compile-test:        called after javac compilation of JUnit tests
-      -pre-compile-test-single:  called before javac compilation of single JUnit test
-      -post-compile-test-single: called after javac compilation of single JUunit test
-      -pre-jar:                  called before JAR building
-      -post-jar:                 called after JAR building
-      -post-clean:               called after cleaning build products
-
-    (Targets beginning with '-' are not intended to be called on their own.)
-
-    Example of inserting an obfuscator after compilation could look like this:
-
-        <target name="-post-compile">
-            <obfuscate>
-                <fileset dir="${build.classes.dir}"/>
-            </obfuscate>
+        <!-- PART 2: compilation and execution targets for this session -->
+        <target name="init"><!--depends="install-ivy, resolve"-->
+            <echo message="Init has been called" />
+            <mkdir dir="${build.dir}" />
+            <echo message="${build.dir} has been created" />
         </target>
-
-    For list of available properties check the imported 
-    nbproject/build-impl.xml file. 
-
-
-    Another way to customize the build is by overriding existing main targets.
-    The targets of interest are: 
-
-      -init-macrodef-javac:     defines macro for javac compilation
-      -init-macrodef-junit:     defines macro for junit execution
-      -init-macrodef-debug:     defines macro for class debugging
-      -init-macrodef-java:      defines macro for class execution
-      -do-jar:                  JAR building
-      run:                      execution of project 
-      -javadoc-build:           Javadoc generation
-      test-report:              JUnit report generation
-
-    An example of overriding the target for project execution could look like this:
-
-        <target name="run" depends="ConcurrentBST-impl.jar">
-            <exec dir="bin" executable="launcher.exe">
-                <arg file="${dist.jar}"/>
-            </exec>
+        <target name="clean">
+            <echo message="Clean has been called" />
+            <delete dir="${build.dir}" />
+            <echo message="${build.dir} has been deleted" />
+            <delete>
+            <fileset dir="." includes="**/*.dot"/>
+        </delete>
+        <delete>
+            <fileset dir="." includes="**/*.pdf"/>
+        </delete>
+        <delete>
+            <fileset dir="." includes="**/*.csv"/>
+        </delete>
+        <echo message=".dot .pdf .csv output files has been deleted" />
         </target>
-
-    Notice that the overridden target depends on the jar target and not only on 
-    the compile target as the regular run target does. Again, for a list of available 
-    properties which you can use, check the target you are overriding in the
-    nbproject/build-impl.xml file. 
-
-    -->
-</project>
+        <target name="compile" depends="init">
+            <echo message="Compile target has been called" />
+            <javac srcdir="${src.dir}" destdir="${build.dir}" includeAntRuntime="false">
+            </javac>
+            <copy todir="${build.dir}" overwrite="true">
+                <fileset dir="${src.dir}">
+                    <include name="*.xml" />
+                </fileset>
+            </copy>
+        </target>
+        <target name="run">
+            <echo message="Running project's default class (Test)" />
+            <java classname="test.Test" classpath="${build.dir}" fork="true"/>
+        </target>
+    </project>

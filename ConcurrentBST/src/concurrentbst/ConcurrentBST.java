@@ -187,7 +187,8 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
         //ichild
         casChild(op.p, op.l, op.newInternal);
         //iunflag
-        op.p.update.compareAndSet(op.p.update.get(), new Update(State.CLEAN, op));
+        op.p.CASUpdate((Update) op.p.update.get(), new Update(State.CLEAN, op));
+        //op.p.update.compareAndSet(op.p.update.get(), new Update(State.CLEAN, op));
 
     }
 
@@ -214,8 +215,9 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
         } else {
             help((Update) op.p.update.get());
             //backtrack CAS
-            op.gp.update.compareAndSet(op.gp.update.get(), new Update(
-                    State.CLEAN, op));
+            op.gp.CASUpdate((Update) op.gp.update.get(), new Update(State.CLEAN, op));
+//            op.gp.update.compareAndSet(op.gp.update.get(), new Update(
+//                    State.CLEAN, op));
             return false;
         }
     }
@@ -232,8 +234,9 @@ public class ConcurrentBST<K extends Integer, V extends Object> implements ITree
         }
         casChild(op.gp, op.p, other);
         //dunflag
-        op.gp.update.compareAndSet(op.gp.update.get(), new Update(State.CLEAN,
-                op));
+        op.gp.CASUpdate((Update) op.gp.update.get(), new Update(State.CLEAN, op));
+//        op.gp.update.compareAndSet(op.gp.update.get(), new Update(State.CLEAN,
+//                op));
     }
 
     public void printTree2DotFile(String filename) throws FileNotFoundException, UnsupportedEncodingException, IOException {

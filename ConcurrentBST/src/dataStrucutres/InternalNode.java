@@ -56,4 +56,9 @@ public class InternalNode<K extends Integer, V extends Object> extends Node<K, V
         }
     }
 
+    public boolean CASUpdate(Update expected, Update update) {
+        return this.update.compareAndSet(
+                expected, update);
+    }
+
 }
