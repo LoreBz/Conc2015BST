@@ -11,8 +11,8 @@ package dataStrucutres;
  */
 public class Update {
 
-    State state;
-    Info info;
+    public State state;
+    public Info info;
 
     /**
      *

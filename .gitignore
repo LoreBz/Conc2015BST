@@ -5,3 +5,11 @@
 /ConcurrentBST/*.txt
 /ConcurrentBST/manifest.mf
 /ConcurrentBST/*.csv
+/bin/
+/ConcurrentBST/src/test/Main.java
+/ConcurrentBST/src/test/TreeThread.java
+/ConcurrentBST/src/test/MyTest.java
+/bin/
+/settings/
+.classpath
+.project
