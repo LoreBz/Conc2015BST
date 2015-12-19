@@ -178,7 +178,7 @@ public class Test {
         ExecutorService executorService = Executors.newFixedThreadPool(numbThreads);
         List<Future<TaskReport>> futures = executorService.invokeAll(tasks);
 
-        executorService.awaitTermination(4, TimeUnit.SECONDS);
+       // executorService.awaitTermination(4, TimeUnit.SECONDS);
 
         List<TaskReport> reports = new ArrayList<>();
         for (Future<TaskReport> future : futures) {
@@ -202,25 +202,25 @@ public class Test {
             reportWriter.println(param.get("OpDescription") + "," + /*param.get("StartNanoSec") + "," + param.get("EndNanoSec") + "," +*/ tr.getNanoStart() + "," + tr.getNanoEnd());
         }
         reportWriter.close();
-        LinkedList<Integer> findNodes = (LinkedList<Integer>) tree.keySet();
-        insertions.removeAll(Collections.singleton(null));
-        deletions.removeAll(Collections.singleton(null));
-        Collections.sort(insertions);
-        Collections.sort(deletions);
-        System.out.println("Inserted\n" + insertions);
-        System.out.println("Deleted\n" + deletions);
-        try {
-            for (int i : deletions) {
-                insertions.remove(insertions.indexOf(i));
-            }
-        } catch (Exception e) {
-            System.out.println("Something wring with insertions/deletions ratio");
-        }
-
-        Collections.sort(insertions);
-        System.out.println("effective op\n" + insertions);
-        Collections.sort(findNodes);
-        System.out.println("keyset\n" + findNodes);
+//        LinkedList<Integer> findNodes = (LinkedList<Integer>) tree.keySet();
+//        insertions.removeAll(Collections.singleton(null));
+//        deletions.removeAll(Collections.singleton(null));
+//        Collections.sort(insertions);
+//        Collections.sort(deletions);
+//        System.out.println("Inserted\n" + insertions);
+//        System.out.println("Deleted\n" + deletions);
+//        try {
+//            for (int i : deletions) {
+//                insertions.remove(insertions.indexOf(i));
+//            }
+//        } catch (Exception e) {
+//            System.out.println("Something wrong with insertions/deletions ratio");
+//        }
+//
+//        Collections.sort(insertions);
+//        System.out.println("effective op\n" + insertions);
+//        Collections.sort(findNodes);
+//        System.out.println("keyset\n" + findNodes);
         Thread.sleep(500);
         Desktop desktop = Desktop.getDesktop();
         desktop.open(new File(reportFilename));
