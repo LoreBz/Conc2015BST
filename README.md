@@ -8,7 +8,7 @@ this repo contains Graphviz2.38 (96.0 Mb), required to render .dot files in Wind
 
 ### Usage
 
-  - from a console, move to directory "Conc2015BST/ConcurrentBST/"
+  - from a console, be sure to be under the root folder "Conc2015BST/"
   - type "ant start"
   - code will be compiled and Test class executed
   - type "ant clean" to delete output files

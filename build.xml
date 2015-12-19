@@ -11,7 +11,7 @@
        # The target "download-ivy" and "install-ivy" will download the ivy jar and place it in the "ivy" folder
        # 
 -->
-<project name="Concurrency2015" default="start" basedir=".">
+<project name="Concurrency2015" default="start" basedir="./ConcurrentBST">
 	<!-- PART 1: General properties definitions -->
 	<property name="build.dir" value="build" />
 	<property name="src.dir" value="src" />
